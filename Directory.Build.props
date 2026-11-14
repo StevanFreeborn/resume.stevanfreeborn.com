@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <GitCommitSha Condition="'$(GitCommitSha)' == '' and '$(GITHUB_SHA)' != ''">$([System.String]::Copy('$(GITHUB_SHA)').Substring(0, 7))</GitCommitSha>
+    <GitCommitSha Condition="'$(GitCommitSha)' == '' and '$(BUILD_SOURCEVERSION)' != ''">$([System.String]::Copy('$(BUILD_SOURCEVERSION)').Substring(0, 7))</GitCommitSha>
+  </PropertyGroup>
+
+  <Target Name="ResolveGitCommitShaMetadata" BeforeTargets="GetAssemblyAttributes">
+    <Exec
+      Command="git rev-parse --short HEAD"
+      ConsoleToMSBuild="true"
+      StandardOutputImportance="low"
+      StandardErrorImportance="low"
+      IgnoreExitCode="true"
+      Condition="'$(GitCommitSha)' == ''"
+    >
+      <Output TaskParameter="ConsoleOutput" PropertyName="_ResolvedGitSha" />
+      <Output TaskParameter="ExitCode" PropertyName="_GitExitCode" />
+    </Exec>
+
+    <PropertyGroup>
+      <GitCommitSha Condition="'$(GitCommitSha)' == '' and '$(_GitExitCode)' == '0' and '$(_ResolvedGitSha)' != ''">$(_ResolvedGitSha)</GitCommitSha>
+      <GitCommitSha Condition="'$(GitCommitSha)' == ''">dev</GitCommitSha>
+      <GitCommitSha Condition="$([System.String]::Copy('$(GitCommitSha)').Length) &gt; 7">$([System.String]::Copy('$(GitCommitSha)').Substring(0, 7))</GitCommitSha>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <AssemblyMetadata Include="GitCommitSha" Value="$(GitCommitSha)" />
+    </ItemGroup>
+  </Target>
+</Project>

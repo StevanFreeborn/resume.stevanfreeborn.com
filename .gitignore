@@ -1,0 +1,35 @@
+## .NET / Visual Studio / VS Code
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.user
+*.suo
+*.pdb
+*.log
+*.binlog
+coverage*.json
+coverage*.xml
+!tests/coverage.settings.xml
+coverage*.info
+appsettings*.json
+!appsettings.Example.json
+
+## Generated resume artifacts & private job variants
+artifacts/
+out/
+*.tar.gz
+variants/*.json
+!variants/example.variant.json
+
+## OS
+.DS_Store
+Thumbs.db
