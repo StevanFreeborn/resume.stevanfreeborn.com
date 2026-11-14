@@ -1,0 +1,14 @@
+{
+  "headline": "Senior Software Quality Engineer  •  Test Automation Architect  •  Quality Platform Engineer",
+  "summary": "Quality engineer who builds test automation from the ground up. For six years I have designed the frameworks, pipelines, and standards that let Onspring ship an enterprise ASP.NET platform with confidence. I test across UI, API, and database layers; write production C#, TypeScript, and Rust; and build the practical tooling, including CLIs, agent skills, and MCP servers, that lets AI agents work reliably against real systems. Before software, I was a food scientist working under USDA and FDA rules, and I hold a degree in biochemistry. That background is rare domain knowledge for validating nutrition computations.",
+  "includePhone": true,
+  "additionalSkills": {},
+  "projectNames": [
+    "onx",
+    "onx-skill",
+    "Aspire End-to-End Testing",
+    "Onspring MCP Server",
+    "AsyncSyncFlagAnalyzer"
+  ],
+  "experienceOverrides": []
+}

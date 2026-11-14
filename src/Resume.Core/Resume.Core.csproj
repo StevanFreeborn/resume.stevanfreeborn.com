@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+    <PackageReference Include="QuestPDF" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Fonts\*.ttf" />
+    <EmbeddedResource Include="Resources\Styles\*.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Resume.Core.Tests" />
+  </ItemGroup>
+
+</Project>
