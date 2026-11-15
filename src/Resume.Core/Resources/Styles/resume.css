@@ -1,0 +1,131 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --fg: #000000;
+  --link: #0000ee;
+  --visited: #551a8b;
+  --border: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --fg: #ffffff;
+    --link: #8ab4f8;
+    --visited: #c58af9;
+    --border: #ffffff;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  max-width: 50rem;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+body.error-page {
+  margin: 3rem auto;
+  text-align: center;
+}
+
+a {
+  color: var(--link);
+}
+
+a:visited {
+  color: var(--visited);
+}
+
+.format-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+header h1 {
+  margin-bottom: 0.25rem;
+}
+
+header p {
+  margin: 0.25rem 0;
+}
+
+h2 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.role {
+  margin-bottom: 1rem;
+}
+
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.role-header h3 {
+  margin: 0;
+}
+
+.role-meta {
+  margin: 0.15rem 0 0.4rem;
+}
+
+footer {
+  margin-top: 2rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+body.error-page footer {
+  margin-top: 2.5rem;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .format-bar,
+  footer {
+    display: none;
+  }
+
+  a,
+  a:visited {
+    color: #000000;
+    text-decoration: none;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  .role {
+    break-inside: avoid;
+  }
+}
