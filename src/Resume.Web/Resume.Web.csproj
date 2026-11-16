@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:11.0-resolute-chiseled-extra</ContainerBaseImage>
+    <ContainerRepository>resume.stevanfreeborn.com</ContainerRepository>
+    <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
+
+    <PublishProfile Condition="'$(PublishProfile)' == '' and '$(PublishContainer)' == 'true'">DefaultContainer</PublishProfile>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and ('$(PublishContainer)' == 'true' or '$(PublishProfile)' == 'DefaultContainer')">linux-arm64</RuntimeIdentifier>
+    <SelfContained Condition="'$(PublishContainer)' == 'true' or '$(PublishProfile)' == 'DefaultContainer'">false</SelfContained>
+    <SatelliteResourceLanguages Condition="'$(PublishContainer)' == 'true' or '$(PublishProfile)' == 'DefaultContainer'">en</SatelliteResourceLanguages>
+    <DebugType Condition="'$(PublishContainer)' == 'true' or '$(PublishProfile)' == 'DefaultContainer'">none</DebugType>
+    <DebugSymbols Condition="'$(PublishContainer)' == 'true' or '$(PublishProfile)' == 'DefaultContainer'">false</DebugSymbols>
+
+    <_BuildTimestamp>$([System.DateTime]::UtcNow.ToString("yyyyMMdd-HHmmss"))</_BuildTimestamp>
+  </PropertyGroup>
+
+  <Target Name="ResolveContainerTags"
+          BeforeTargets="_CreateContainerConfiguration;CreateContainer;PublishContainer;ComputeContainerConfig"
+          DependsOnTargets="ResolveGitCommitShaMetadata">
+    <PropertyGroup>
+      <GeneratedImageTag>resume-$(_BuildTimestamp)-$(GitCommitSha)</GeneratedImageTag>
+      <ContainerImageTags Condition="'$(ContainerImageTags)' == ''">$(GeneratedImageTag);latest</ContainerImageTags>
+    </PropertyGroup>
+    <Message Importance="high" Text="Container Image Tags: $(ContainerImageTags)" />
+  </Target>
+
+  <ItemGroup>
+    <ContainerPort Include="8080" Type="tcp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Resume.Core\Resume.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Resume.Web.Tests" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PublishContainer)' == 'true' or '$(PublishProfile)' == 'DefaultContainer'">
+    <Content Update="appsettings*.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+</Project>
