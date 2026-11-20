@@ -1,0 +1,84 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+env:
+  IMAGE_NAME: resume.stevanfreeborn.com
+  CONTAINER_NAME: resume.stevanfreeborn.com
+jobs:
+  build-and-deploy:
+    name: Validate, Publish Container & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '11.0.x'
+      - name: Restore Dependencies
+        run: dotnet restore
+      - name: Build Solution
+        run: dotnet build -c Release --no-restore
+      - name: Run Tests
+        run: dotnet test -c Release --no-build --verbosity normal
+      - name: Validate Resume Artifacts
+        run: dotnet run --project src/Resume.Cli/Resume.Cli.csproj -c Release --no-build -- validate
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish Container Image to Docker Hub
+        run: |
+          dotnet publish src/Resume.Web/Resume.Web.csproj \
+            -c Release \
+            -t:PublishContainer \
+            /p:PublishContainer=true \
+            /p:ContainerRegistry=docker.io \
+            /p:ContainerRepository="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}"
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: ${{ secrets.TS_TAGS || 'tag:ci' }}
+      - name: Deploy to Target Server via SSH
+        uses: appleboy/ssh-action@v1.2.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+            CONTAINER="${{ env.CONTAINER_NAME }}"
+            HOST_PORT="${{ secrets.APP_PORT || '5100' }}"
+
+            echo "Pulling latest image: $IMAGE"
+            docker pull "$IMAGE"
+
+            echo "Stopping and removing existing container if running..."
+
+            if [ "$(docker ps -aq -f name=^/${CONTAINER}$)" ]; then
+              docker stop "$CONTAINER" || true
+              docker rm "$CONTAINER" || true
+            fi
+
+            echo "Starting new container..."
+
+            docker run -d \
+              --name "$CONTAINER" \
+              --restart unless-stopped \
+              -p "127.0.0.1:${HOST_PORT}:8080" \
+              -e ASPNETCORE_ENVIRONMENT=Production \
+              "$IMAGE"
+
+            echo "Verifying container health..."
+            sleep 3
+            curl -fsS "http://localhost:${HOST_PORT}/health"
+            docker ps -f name=^/${CONTAINER}$
