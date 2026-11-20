@@ -23,7 +23,7 @@ public static class StevanResume
       "Quality engineer who builds test automation from the ground up. For six years I have designed the " +
       "frameworks, pipelines, and standards that let Onspring ship an enterprise ASP.NET platform with " +
       "confidence. I test across UI, API, and database layers; write production C#, TypeScript, and Rust; " +
-      "and build the practical tooling—CLIs, agent skills, and MCP servers—that lets AI agents work reliably " +
+      "and build practical tooling like CLIs, agent skills, and MCP servers that lets AI agents work reliably " +
       "against real systems. Before software, I worked as a food scientist under USDA and FDA regulations " +
       "after earning a degree in biochemistry, training me early in strict specifications, traceability, " +
       "and empirical testing."
